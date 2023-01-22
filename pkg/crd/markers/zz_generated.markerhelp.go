@@ -25,6 +25,17 @@ import (
 	"sigs.k8s.io/controller-tools/pkg/markers"
 )
 
+func (AllowAdditionalProperties) Help() *markers.DefinitionHelp {
+	return &markers.DefinitionHelp{
+		Category: "CRD validation",
+		DetailedHelp: markers.DetailedHelp{
+			Summary: "allows additional properties to be specified in this object. ",
+			Details: "This property sets when additional properties are allowed in an object. Default is 'true'.",
+		},
+		FieldHelp: map[string]markers.DetailedHelp{},
+	}
+}
+
 func (Default) Help() *markers.DefinitionHelp {
 	return &markers.DefinitionHelp{
 		Category: "CRD validation",

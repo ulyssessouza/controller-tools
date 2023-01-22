@@ -101,6 +101,10 @@ var ValidationIshMarkers = []*definitionWithHelp{
 		WithHelp(XPreserveUnknownFields{}.Help()),
 	must(markers.MakeDefinition("kubebuilder:pruning:PreserveUnknownFields", markers.DescribesType, XPreserveUnknownFields{})).
 		WithHelp(XPreserveUnknownFields{}.Help()),
+	must(markers.MakeDefinition("kubebuilder:validation:AllowAdditionalProperties", markers.DescribesType, AllowAdditionalProperties(true))).
+		WithHelp(AllowAdditionalProperties(true).Help()),
+	must(markers.MakeDefinition("kubebuilder:validation:AllowAdditionalProperties", markers.DescribesField, AllowAdditionalProperties(true))).
+		WithHelp(AllowAdditionalProperties(true).Help()),
 }
 
 func init() {
@@ -236,6 +240,12 @@ type Default struct {
 // in favor of the kubebuilder:pruning:PreserveUnknownFields variant.  They function
 // identically.
 type XPreserveUnknownFields struct{}
+
+// +controllertools:marker:generateHelp:category="CRD validation"
+// AllowAdditionalProperties allows additional properties to be specified in this object.
+//
+// This property sets when additional properties are allowed in an object. Default is 'true'.
+type AllowAdditionalProperties bool
 
 // +controllertools:marker:generateHelp:category="CRD validation"
 // EmbeddedResource marks a fields as an embedded resource with apiVersion, kind and metadata fields.
@@ -473,6 +483,13 @@ func (m XPreserveUnknownFields) ApplyToSchema(schema *apiext.JSONSchemaProps) er
 
 func (m XEmbeddedResource) ApplyToSchema(schema *apiext.JSONSchemaProps) error {
 	schema.XEmbeddedResource = true
+	return nil
+}
+
+func (m AllowAdditionalProperties) ApplyToSchema(schema *apiext.JSONSchemaProps) error {
+	schema.AdditionalProperties = &apiext.JSONSchemaPropsOrBool{
+		Allows: bool(m),
+	}
 	return nil
 }
 
